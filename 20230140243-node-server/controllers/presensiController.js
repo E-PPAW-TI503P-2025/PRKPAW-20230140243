@@ -1,5 +1,5 @@
  	// 1. Ganti sumber data dari array ke model Sequelize
- 	const { Presensi } = require("../../models");
+ 	const { Presensi } = require("../models");
  	const { format } = require("date-fns-tz");
  	const timeZone = "Asia/Jakarta";
  	
@@ -86,4 +86,69 @@
  	  } catch (error) {
  	    res.status(500).json({ message: "Terjadi kesalahan pada server", error: error.message });
  	  }
+	  
  	};
+
+	exports.deletePresensi = async (req, res) => {
+  try {
+    const { id: userId } = req.user;
+    const presensiId = req.params.id;
+    const recordToDelete = await Presensi.findByPk(presensiId);
+
+    if (!recordToDelete) {
+      return res
+        .status(404)
+        .json({ message: "Catatan presensi tidak ditemukan." });
+    }
+    if (recordToDelete.userId !== userId) {
+      return res
+        .status(403)
+        .json({ message: "Akses ditolak: Anda bukan pemilik catatan ini." });
+    }
+      await recordToDelete.destroy();
+    res.status(204).send();
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Terjadi kesalahan pada server", error: error.message });
+  }
+};
+
+exports.updatePresensi = async (req, res) => {
+  // Periksa hasil validasi DI AWAL FUNGSI
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    // Jika ada error, kirim respon 400 (Bad Request)
+    return res.status(400).json({ errors: errors.array() });
+  }
+
+  // 3. Jika tidak ada error, baru lanjutkan logika bisnis Anda
+  try {
+    const { id } = req.params;
+    const { waktuCheckIn, waktuCheckOut } = req.body;
+
+    // ... (Logika Anda untuk update data ke database) ...
+    const presensi = await Presensi.findByPk(id);
+    if (!presensi) {
+      return res.status(404).json({ message: "Data tidak ditemukan" });
+    }
+    
+    // Update field jika ada di body
+    if (waktuCheckIn) presensi.waktuCheckIn = waktuCheckIn;
+    if (waktuCheckOut) presensi.waktuCheckOut = waktuCheckOut;
+    
+    await presensi.save();
+    
+    res.status(200).json({
+      message: `Data presensi ${id} berhasil diupdate.`,
+      data: presensi
+    });
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Terjadi error pada server" });
+  }
+};
+
+
+
