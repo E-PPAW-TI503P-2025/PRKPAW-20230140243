@@ -1,36 +1,26 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const presensiController = require('../controllers/presensiController');
-const { addUserData } = require('../middleware/permissionMiddleware');
+const { body } = require("express-validator");
+const presensiController = require("../controllers/presensiController");
+const authenticateToken = require("../middleware/authenticateToken");
 
-const { body } = require('express-validator');
-
+// Validasi input update presensi
 const validatePresensiUpdate = [
-  body('waktuCheckIn')
-    .optional() 
-    .isISO8601() 
-    .withMessage('Format waktuCheckIn harus tanggal ISO 8601 yang valid.'),
-
-  body('waktuCheckOut')
+  body("waktuCheckIn")
     .optional()
     .isISO8601()
-    .withMessage('Format waktuCheckOut harus tanggal ISO 8601 yang valid.')
+    .withMessage("Format waktuCheckIn harus tanggal ISO 8601 yang valid."),
+  body("waktuCheckOut")
+    .optional()
+    .isISO8601()
+    .withMessage("Format waktuCheckOut harus tanggal ISO 8601 yang valid."),
 ];
 
-
-router.use(addUserData);
-
-
-router.post('/check-in', presensiController.CheckIn);
-router.post('/check-out', presensiController.CheckOut);
-
-
-router.put(
-  '/:id',
-  validatePresensiUpdate, 
-  presensiController.updatePresensi
-);
-
-router.delete('/:id', presensiController.deletePresensi);
+// === ROUTES ===
+router.post("/checkin", authenticateToken, presensiController.CheckIn);
+router.post("/checkout", authenticateToken, presensiController.CheckOut);
+router.get("/", authenticateToken, presensiController.getAllPresensi);
+router.put("/:id", authenticateToken, validatePresensiUpdate, presensiController.updatePresensi);
+router.delete("/:id", authenticateToken, presensiController.deletePresensi);
 
 module.exports = router;
