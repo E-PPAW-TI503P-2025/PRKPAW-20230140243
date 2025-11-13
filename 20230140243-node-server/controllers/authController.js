@@ -5,11 +5,14 @@ const JWT_SECRET = 'INI_ADALAH_KUNCI_RAHASIA_ANDA_YANG_SANGAT_AMAN';
 
 exports.register = async (req, res) => {
   try {
-    const { nama, email, password, role } = req.body;
+    const { name, email, password, role } = req.body;
 
-    if (!nama || !email || !password) {
-      return res.status(400).json({ message: "Nama, email, dan password harus diisi" });
-    }
+    if (!name || name.trim() === '' || 
+            !email || email.trim() === '' || 
+            !password || password.trim() === '') 
+        {
+            return res.status(400).json({ message: "Nama, email, dan password harus diisi" });
+        }
 
     if (role && !['mahasiswa', 'admin'].includes(role)) {
       return res.status(400).json({ message: "Role tidak valid. Harus 'mahasiswa' atau 'admin'." });
@@ -17,8 +20,8 @@ exports.register = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10); 
     const newUser = await User.create({
-      nama,
-      email,
+      name: name,
+      email: email,
       password: hashedPassword,
       role: role || 'mahasiswa' 
     });
@@ -53,7 +56,7 @@ exports.login = async (req, res) => {
 
     const payload = {
       id: user.id,
-      nama: user.nama,
+      nama: user.name,
       role: user.role 
     };
 

@@ -1,21 +1,22 @@
- 	import React, { useEffect, useState } from 'react';
+import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import LoginPage from './LoginPage';
+import RegisterPage from './RegisterPage';
+import DashboardPage from './DashboardPage';
 
 function App() {
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    fetch('http://localhost:5000')
-      .then(response => response.json())
-      .then(data => setMessage(data.message))
-      .catch(error => console.error('Error:', error));
-  }, []);
-
   return (
-    <div>
-      <h1>Integrasi React dan Node.js</h1>
-      <p>Pesan dari server: {message}</p>
-    </div>
+    <Router>
+      <div>
+        
+        <Routes>
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/" element={<LoginPage />} /> 
+        </Routes>
+      </div>
+    </Router>
   );
 }
-
 export default App;
