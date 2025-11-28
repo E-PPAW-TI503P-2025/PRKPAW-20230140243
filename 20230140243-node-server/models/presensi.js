@@ -4,14 +4,13 @@ const {
 } = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
   class Presensi extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
     static associate(models) {
-  Presensi.belongsTo(models.User, { foreignKey: 'userId', as: 'user' });
-}
+      // Definisi Relasi: Setiap Presensi dimiliki oleh satu User
+      Presensi.belongsTo(models.User, {
+        foreignKey: 'userId', 
+        as: 'User' // Diubah dari 'user' menjadi 'User' agar konsisten dengan konvensi Sequelize/Node.js (PascalCase untuk Model)
+      });
+    }
 
   }
   Presensi.init({
@@ -19,21 +18,41 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.INTEGER,
       allowNull: false,
     },
-    nama: {
-      type: DataTypes.STRING,
-      allowNull: false,
-    },
+
     checkIn: {
       type: DataTypes.DATE,
       allowNull: false,
     },
     checkOut: {
       type: DataTypes.DATE,
-      allowNull: true, // Boleh null
-    }
+      allowNull: true, 
+    },
+    
+    // ✅ PERBAIKAN: Kolom Lokasi Masuk
+    latitude_in: { 
+        type: DataTypes.DECIMAL(10, 8),
+        allowNull: true
+    },
+    longitude_in: { 
+        type: DataTypes.DECIMAL(11, 8),
+        allowNull: true 
+    },
+
+    // ✅ PERBAIKAN: Kolom Lokasi Keluar
+    latitude_out: { 
+        type: DataTypes.DECIMAL(10, 8),
+        allowNull: true
+    },
+    longitude_out: { 
+        type: DataTypes.DECIMAL(11, 8),
+        allowNull: true 
+    },
+ 
   }, {
     sequelize,
     modelName: 'Presensi',
-  });
+    
+  },
+  );
   return Presensi;
 };

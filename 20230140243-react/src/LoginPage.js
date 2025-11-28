@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import { useNavigate, Link } from 'react-router-dom'; // Link sudah ditambahkan
+import { useNavigate, Link } from 'react-router-dom'; 
+
+const API_URL = 'http://localhost:3001/api/auth/login';
 
 function LoginPage() {
   const [email, setEmail] = useState('');
@@ -13,34 +15,52 @@ function LoginPage() {
     setError(null);
 
     try {
-      const response = await axios.post('http://localhost:3001/api/auth/login', {
+      const response = await axios.post(API_URL, {
         email: email,
         password: password
       });
 
       const token = response.data.token;
+      // Simpan token ke localStorage
       localStorage.setItem('token', token);
 
+      // Arahkan ke dashboard
       navigate('/dashboard');
 
     } catch (err) {
-      setError(err.response ? err.response.data.message : 'Login gagal');
+      // Tangani error dan tampilkan di UI
+      setError(err.response && err.response.data && err.response.data.message 
+        ? err.response.data.message 
+        : 'Login gagal. Periksa kembali email dan password Anda.');
     }
   };
 
   return (
-    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-md w-full max-w-md">
-        <h2 className="text-3xl font-bold text-center mb-6 text-gray-800">Login</h2>
+    <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center p-4">
+      {/* Container Card Login */}
+      <div className="bg-white p-8 rounded-xl shadow-2xl w-full max-w-md transform transition-all hover:shadow-xl">
+        
+        <h2 className="text-3xl font-extrabold text-center mb-8 text-gray-800 tracking-tight">
+          Masuk ke Akun Anda 🔑
+        </h2>
+        
+        {/* Pesan Error */}
+        {error && (
+          <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-5 transition duration-300 ease-in-out" role="alert">
+            <p className="font-bold">Error!</p>
+            <p className="text-sm">{error}</p>
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="space-y-6">
           
           {/* INPUT EMAIL */}
           <div>
             <label
               htmlFor="email"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-semibold text-gray-700 mb-1"
             >
-              Email:
+              Email
             </label>
             <input
               id="email"
@@ -48,7 +68,9 @@ function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="contoh@domain.com"
+              // Warna focus ring diubah menjadi GREEN (konsisten dengan Register)
+              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 transition duration-150 ease-in-out"
             />
           </div>
 
@@ -56,9 +78,9 @@ function LoginPage() {
           <div>
             <label
               htmlFor="password"
-              className="block text-sm font-medium text-gray-700"
+              className="block text-sm font-semibold text-gray-700 mb-1"
             >
-              Password:
+              Password
             </label>
             <input
               id="password"
@@ -66,34 +88,36 @@ function LoginPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="mt-1 w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              placeholder="Masukkan password Anda"
+              // Warna focus ring diubah menjadi GREEN (konsisten dengan Register)
+              className="mt-1 w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-green-500 focus:border-green-500 transition duration-150 ease-in-out"
             />
           </div>
 
+          {/* TOMBOL LOGIN */}
           <button
             type="submit"
-            className="w-full py-2 px-4 bg-blue-600 text-white font-semibold rounded-md shadow-sm hover:bg-blue-700"
+            // Warna tombol LOGIN tetap BLUE untuk membedakan aksi utama (misal: Aksi sekunder menggunakan Green)
+            className="w-full py-2.5 px-4 bg-blue-600 text-white font-bold rounded-lg shadow-md hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-500 focus:ring-opacity-50 transition duration-200 ease-in-out transform hover:scale-[1.01]"
           >
-            Login
+            Masuk
           </button>
         </form>
 
-        {/* Tombol Register di bawah form */}
-        <div className="mt-6 pt-4 border-t border-gray-200 text-center">
-            <p className="text-gray-600 mb-4">Belum punya akun? Registrasi di sini:</p>
-            <div className="flex justify-center space-x-4">
-                <Link 
-                    to="/register" 
-                    className="py-2 px-6 bg-green-600 text-white font-bold rounded-full shadow-md hover:bg-green-700 transition duration-150 transform hover:scale-105"
-                >
-                    REGISTER
-                </Link>
-            </div>
+        {/* Tombol/Link Register di bawah form */}
+        <div className="mt-8 pt-6 border-t border-gray-200 text-center">
+          <p className="text-sm text-gray-600 mb-3">
+            Belum punya akun?
+          </p>
+          <Link 
+            to="/register" 
+            // Menggunakan warna GREEN yang kuat untuk konsistensi dengan branding Register
+            className="inline-block py-2 px-8 bg-green-600 text-white font-bold rounded-full shadow-lg hover:bg-green-700 transition duration-150 transform hover:scale-105"
+          >
+            DAFTAR SEKARANG
+          </Link>
         </div>
         
-        {error && (
-          <p className="text-red-600 text-sm mt-4 text-center">{error}</p>
-        )}
       </div>
     </div>
   );
