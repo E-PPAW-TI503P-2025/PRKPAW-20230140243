@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
       // Definisi Relasi: Setiap Presensi dimiliki oleh satu User
       Presensi.belongsTo(models.User, {
         foreignKey: 'userId', 
-        as: 'User' // Diubah dari 'user' menjadi 'User' agar konsisten dengan konvensi Sequelize/Node.js (PascalCase untuk Model)
+        as: 'user' // Diubah dari 'user' menjadi 'User' agar konsisten dengan konvensi Sequelize/Node.js (PascalCase untuk Model)
       });
     }
 
@@ -28,6 +28,10 @@ module.exports = (sequelize, DataTypes) => {
       allowNull: true, 
     },
     
+    buktiFoto: {
+      type: DataTypes.STRING, // Menyimpan path atau nama file foto
+      allowNull: true,
+    },
     // ✅ PERBAIKAN: Kolom Lokasi Masuk
     latitude_in: { 
         type: DataTypes.DECIMAL(10, 8),

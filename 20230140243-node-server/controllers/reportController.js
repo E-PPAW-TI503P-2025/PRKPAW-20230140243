@@ -10,7 +10,7 @@ exports.getDailyReport = async (req, res) => {
         include: [{ 
             model: User, 
             as: 'user', // Sesuai dengan alias di models/presensi.js
-            attributes: ['id', 'name', 'email'], // Kolom yang ingin diambil
+            attributes: ['id', 'nama', 'email'], // Kolom yang ingin diambil
         }],
         order: [['checkIn', 'DESC']]
     };
@@ -19,7 +19,7 @@ exports.getDailyReport = async (req, res) => {
     if (nama) {
       // 2. Filter Nama berdasarkan relasi (tabel User)
       options.include[0].where = { 
-            name: {
+            nama: {
                 [Op.like]: `%${nama}%`,
             }
         };

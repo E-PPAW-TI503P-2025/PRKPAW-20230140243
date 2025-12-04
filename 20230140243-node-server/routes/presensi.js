@@ -4,6 +4,19 @@ const { body } = require("express-validator");
 const presensiController = require("../controllers/presensiController");
 const authenticateToken = require("../middleware/authenticateToken");
 const { isAdmin } = require("../middleware/permissionMiddleware");
+const multer = require('multer');
+const path = require('path');
+// Konfigurasi penyimpanan file
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        cb(null, 'uploads/'); 
+    },
+    filename: (req, file, cb) => {
+        cb(null, Date.now() + path.extname(file.originalname)); 
+    }
+});
+// Middleware 'upload'
+const upload = multer({ storage: storage });
 // Validasi input update presensi
 const validatePresensiUpdate = [
   body("waktuCheckIn")
@@ -17,8 +30,8 @@ const validatePresensiUpdate = [
 ];
 
 // === ROUTES ===
-router.post("/checkin", authenticateToken, presensiController.CheckIn);
-router.post("/checkout", authenticateToken, presensiController.CheckOut);
+router.post('/check-in', presensiController.upload.single('image'), authenticateToken, presensiController.CheckIn);
+router.post('/check-out', authenticateToken, presensiController.upload.single('image'), presensiController.CheckOut);
 router.get("/", authenticateToken, isAdmin, presensiController.getAllPresensi);
 router.put("/:id", authenticateToken, isAdmin, validatePresensiUpdate, presensiController.updatePresensi);
 router.delete("/:id", authenticateToken, isAdmin, presensiController.deletePresensi);

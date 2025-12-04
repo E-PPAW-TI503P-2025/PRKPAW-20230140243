@@ -3,7 +3,7 @@ const cors = require("cors");
 const app = express();
 const PORT = 3001;
 const morgan = require("morgan");
-
+const path = require('path'); 
 // --- PERBAIKAN: Impor instance sequelize dari models/index.js ---
 const { sequelize } = require('./models');
 
@@ -12,6 +12,8 @@ const presensiRoutes = require("./routes/presensi");
 const reportRoutes = require("./routes/reports");
 const authRoutes = require("./routes/auth");
 
+
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 // Middleware
 app.use(cors());
 app.use(express.json());
@@ -25,7 +27,7 @@ res.send("Home Page for API");
 });
 const ruteBuku = require("./routes/books");
 app.use("/api/books", ruteBuku);
-app.use("/api/presensi", presensiRoutes);
+app.use("/api/attendance", presensiRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/auth", authRoutes);
 
